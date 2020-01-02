@@ -10,13 +10,11 @@ namespace CurrencyExchangeRate
     public class CurrencyManager
     {
         private readonly string tcmbUrl;
-        public CurrencyManager(int year, int month, int day)
+        private readonly DateTime date;
+        public CurrencyManager(DateTime date)
         {
-            
-            DateTime dt = new DateTime(year,month,day);
-
-            tcmbUrl = "https://www.tcmb.gov.tr/kurlar/" + string.Format("{0:yyyyMM}",dt) + "/" + string.Format("{0:ddMMyyyy}",dt) + ".xml";
-            
+            tcmbUrl = "https://www.tcmb.gov.tr/kurlar/" + string.Format("{0:yyyyMM}",date) + "/" + string.Format("{0:ddMMyyyy}",date) + ".xml";   
+            this.date = date;
         }
         public async Task<List<Currency>> GetCurrencyAsync(){
             List<Currency> currencyList = new List<Currency>();
@@ -28,8 +26,10 @@ namespace CurrencyExchangeRate
                     currencyList = serializer.Build("Tarih_Date").GetList(result);
                 }
             }
+            currencyList.ForEach(p=>{
+                p.CurrencyDate = date;
+                });            
             return currencyList;
-            
         }
     }
 }
